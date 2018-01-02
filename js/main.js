@@ -84,15 +84,22 @@ var importColor = 0x154492;
 var selectedCountry = null;
 var previouslySelectedCountry = null;
 
-//	contains info about what year, what countries, categories, etc that's being visualized
-var selectionData;
-
 //	when the app is idle this will be true
 var idle = false;
 
 //	for svg loading
 //	deprecated, not using svg loading anymore
 var assetList = [];
+
+
+var controllers = {
+    speed: 			3,
+    multiplier: 	0.5,
+    backgroundColor:"#000000",
+    zoom: 			1,
+    spin: 			0,
+    transitionTime: 2000,
+};
 
 //	TODO
 //	use underscore and ".after" to load these in order
@@ -109,6 +116,7 @@ function start( e ){
 		mapIndexedImage.onload = function() {
 			mapOutlineImage = new Image();
 			mapOutlineImage.src = 'images/map_outline.png';
+            // mapOutlineImage.src = 'images/earthmap1k.jpg';
 			mapOutlineImage.onload = function(){
 				loadCountryCodes(
 					function(){
@@ -163,6 +171,9 @@ var Selection = function(){
 		return list;
 	}
 };
+
+//	contains info about what year, what countries, categories, etc that's being visualized
+var selectionData = new Selection();
 
 //	-----------------------------------------------------------------------------
 //	All the initialization stuff for THREE
@@ -293,8 +304,6 @@ function initScene() {
 
 	visualizationMesh = new THREE.Object3D();
 	rotating.add(visualizationMesh);
-
-	buildGUI();
 
 	selectVisualization( timeBins, '2010', ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );					
 

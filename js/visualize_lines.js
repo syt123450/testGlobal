@@ -58,6 +58,7 @@ function makeConnectionLineGeometry( exporter, importer, value, type ){
 	var vertexCountDesired = Math.floor( /*splineCurveA.getLength()*/ distanceBetweenCountryCenter * 0.02 + 6 ) * 2;	
 
 	//	collect the vertices
+	//两个国建之间的距离越短获取点的数量越少
 	var points = splineCurveA.getPoints( vertexCountDesired );
 
 	//	remove the very last point since it will be duplicated on the next half of the curve
@@ -67,6 +68,7 @@ function makeConnectionLineGeometry( exporter, importer, value, type ){
 
 	//	add one final point to the center of the earth
 	//	we need this for drawing multiple arcs, but piled into one geometry buffer
+	//不是很理解最后加上这个点的作用？
 	points.push( vec3_origin );
 
 	var val = value * 0.0003;

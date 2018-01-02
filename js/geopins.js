@@ -36,5 +36,5 @@ function loadGeoData( latlonData ){
 		countryData[country.countryName] = country;	
 	}		
 
-	// console.log(countryData);
+	console.log(countryData);
 }
