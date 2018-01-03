@@ -1,7 +1,7 @@
 function loadGeoData( latlonData ){
     //	-----------------------------------------------------------------------------
     //	Load the world geo data json, per country	
-
+	console.log('latlondata=====', latlonData);
 	var sphereRad = 1;				
 	var rad = 100;
 

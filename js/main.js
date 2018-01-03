@@ -125,6 +125,7 @@ function start( e ){
 								loadContentData(								
 									function(){																	
 										initScene();
+										console.log('scene++++++++', scene);
 										animate();		
 									}
 								);														
@@ -270,42 +271,42 @@ function initScene() {
 	rotating.add( sphere );	
 
 
-	//目标是生成selectableCountries, 这个list保存了国家的名称
-	for( var i in timeBins ){					
-		var bin = timeBins[i].data;
-		for( var s in bin ){
-			var set = bin[s];
-			// if( set.v < 1000000 )
-			// 	continue;
+	// //目标是生成selectableCountries, 这个list保存了国家的名称
+	// for( var i in timeBins ){
+	// 	var bin = timeBins[i].data;
+	// 	for( var s in bin ){
+	// 		var set = bin[s];
+	// 		// if( set.v < 1000000 )
+	// 		// 	continue;
+	//
+	// 		var exporterName = set.e.toUpperCase();
+	// 		var importerName = set.i.toUpperCase();
+	//
+	// 		//	let's track a list of actual countries listed in this data set
+	// 		//	this is actually really slow... consider re-doing this with a map
+	// 		if( $.inArray(exporterName, selectableCountries) < 0 )
+	// 			selectableCountries.push( exporterName );
+	//
+	// 		if( $.inArray(importerName, selectableCountries) < 0 )
+	// 			selectableCountries.push( importerName );
+	// 	}
+	// }
 
-			var exporterName = set.e.toUpperCase();
-			var importerName = set.i.toUpperCase();
-
-			//	let's track a list of actual countries listed in this data set
-			//	this is actually really slow... consider re-doing this with a map
-			if( $.inArray(exporterName, selectableCountries) < 0 )
-				selectableCountries.push( exporterName );
-
-			if( $.inArray(importerName, selectableCountries) < 0 )
-				selectableCountries.push( importerName );
-		}
-	}
-
-	console.log( selectableCountries );
+	// console.log( selectableCountries );
 	
-	// load geo data (country lat lons in this case)
-	console.time('loadGeoData');
-	loadGeoData( latlonData );				
-	console.timeEnd('loadGeoData');				
+	// // load geo data (country lat lons in this case)
+	// console.time('loadGeoData');
+	// loadGeoData( latlonData );
+	// console.timeEnd('loadGeoData');
 
-	console.time('buildDataVizGeometries');
-	var vizilines = buildDataVizGeometries(timeBins);
-	console.timeEnd('buildDataVizGeometries');
+	// console.time('buildDataVizGeometries');
+	// var vizilines = buildDataVizGeometries(timeBins);
+	// console.timeEnd('buildDataVizGeometries');
 
-	visualizationMesh = new THREE.Object3D();
-	rotating.add(visualizationMesh);
+	// visualizationMesh = new THREE.Object3D();
+	// rotating.add(visualizationMesh);
 
-	selectVisualization( timeBins, '2010', ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );					
+	// selectVisualization( timeBins, '2010', ['UNITED STATES'], ['Military Weapons','Civilian Weapons', 'Ammunition'], ['Military Weapons','Civilian Weapons', 'Ammunition'] );
 
 		// test for highlighting specific countries
 	// highlightCountry( ["United States", "Switzerland", "China"] );
@@ -320,29 +321,29 @@ function initScene() {
 	renderer.sortObjects = false;		
 	renderer.generateMipmaps = false;					
 
-	glContainer.appendChild( renderer.domElement );									
+	glContainer.appendChild( renderer.domElement );
 
 
-    //	-----------------------------------------------------------------------------
-    //	Event listeners
-	document.addEventListener( 'mousemove', onDocumentMouseMove, true );
-	// document.addEventListener( 'windowResize', onDocumentResize, false );
-
-	//masterContainer.addEventListener( 'mousedown', onDocumentMouseDown, true );	
-	//masterContainer.addEventListener( 'mouseup', onDocumentMouseUp, false );	
-	document.addEventListener( 'mousedown', onDocumentMouseDown, true );	
-	document.addEventListener( 'mouseup', onDocumentMouseUp, false );	
-	
-	masterContainer.addEventListener( 'click', onClick, true );	
-	masterContainer.addEventListener( 'mousewheel', onMouseWheel, false );
-	
-	//	firefox	
-	masterContainer.addEventListener( 'DOMMouseScroll', function(e){
-		    var evt=window.event || e; //equalize event object
-    		onMouseWheel(evt);
-	}, false );
-
-	document.addEventListener( 'keydown', onKeyDown, false);												    			    	
+	// //	-----------------------------------------------------------------------------
+	// //	Event listeners
+	// document.addEventListener( 'mousemove', onDocumentMouseMove, true );
+	// // document.addEventListener( 'windowResize', onDocumentResize, false );
+	//
+	// //masterContainer.addEventListener( 'mousedown', onDocumentMouseDown, true );
+	// //masterContainer.addEventListener( 'mouseup', onDocumentMouseUp, false );
+	// document.addEventListener( 'mousedown', onDocumentMouseDown, true );
+	// document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+	//
+	// masterContainer.addEventListener( 'click', onClick, true );
+	// masterContainer.addEventListener( 'mousewheel', onMouseWheel, false );
+	//
+	// //	firefox
+	// masterContainer.addEventListener( 'DOMMouseScroll', function(e){
+	// 	    var evt=window.event || e; //equalize event object
+    	// 	onMouseWheel(evt);
+	// }, false );
+	//
+	// document.addEventListener( 'keydown', onKeyDown, false);
 
     //	-----------------------------------------------------------------------------
     //	Setup our camera
@@ -358,83 +359,84 @@ function initScene() {
 
 function animate() {	
 
-	//	Disallow roll for now, this is interfering with keyboard input during search
-/*	    	
-	if(keyboard.pressed('o') && keyboard.pressed('shift') == false)
-		camera.rotation.z -= 0.08;		    	
-	if(keyboard.pressed('p') && keyboard.pressed('shift') == false)
-		camera.rotation.z += 0.08;		   
-*/
-
-	if( rotateTargetX !== undefined && rotateTargetY !== undefined ){
-
-		rotateVX += (rotateTargetX - rotateX) * 0.012;
-		rotateVY += (rotateTargetY - rotateY) * 0.012;
-
-		// var move = new THREE.Vector3( rotateVX, rotateVY, 0 );
-		// var distance = move.length();
-		// if( distance > .01 )
-		// 	distance = .01;
-		// move.normalize();
-		// move.multiplyScalar( distance );
-
-		// rotateVX = move.x;
-		// rotateVy = move.y;		
-
-		if( Math.abs(rotateTargetX - rotateX) < 0.1 && Math.abs(rotateTargetY - rotateY) < 0.1 ){
-			rotateTargetX = undefined;
-			rotateTargetY = undefined;
-		}
-	}
+// 	//	Disallow roll for now, this is interfering with keyboard input during search
+// /*
+// 	if(keyboard.pressed('o') && keyboard.pressed('shift') == false)
+// 		camera.rotation.z -= 0.08;
+// 	if(keyboard.pressed('p') && keyboard.pressed('shift') == false)
+// 		camera.rotation.z += 0.08;
+// */
+//
+// 	if( rotateTargetX !== undefined && rotateTargetY !== undefined ){
+//
+// 		rotateVX += (rotateTargetX - rotateX) * 0.012;
+// 		rotateVY += (rotateTargetY - rotateY) * 0.012;
+//
+// 		// var move = new THREE.Vector3( rotateVX, rotateVY, 0 );
+// 		// var distance = move.length();
+// 		// if( distance > .01 )
+// 		// 	distance = .01;
+// 		// move.normalize();
+// 		// move.multiplyScalar( distance );
+//
+// 		// rotateVX = move.x;
+// 		// rotateVy = move.y;
+//
+// 		if( Math.abs(rotateTargetX - rotateX) < 0.1 && Math.abs(rotateTargetY - rotateY) < 0.1 ){
+// 			rotateTargetX = undefined;
+// 			rotateTargetY = undefined;
+// 		}
+// 	}
+//
+// 	rotateX += rotateVX;
+// 	rotateY += rotateVY;
+//
+// 	//rotateY = wrap( rotateY, -Math.PI, Math.PI );
+//
+// 	rotateVX *= 0.98;
+// 	rotateVY *= 0.98;
+//
+// 	if(dragging || rotateTargetX !== undefined ){
+// 		rotateVX *= 0.6;
+// 		rotateVY *= 0.6;
+// 	}
+//
+// 	rotateY += controllers.spin * 0.01;
+//
+// 	//	constrain the pivot up/down to the poles
+// 	//	force a bit of bounce back action when hitting the poles
+// 	if(rotateX < -rotateXMax){
+// 		rotateX = -rotateXMax;
+// 		rotateVX *= -0.95;
+// 	}
+// 	if(rotateX > rotateXMax){
+// 		rotateX = rotateXMax;
+// 		rotateVX *= -0.95;
+// 	}
+//
+// 	// TWEEN.update();
+//
+// 	rotating.rotation.x = rotateX;
+// 	rotating.rotation.y = rotateY;
 	
-	rotateX += rotateVX;
-	rotateY += rotateVY;
-
-	//rotateY = wrap( rotateY, -Math.PI, Math.PI );
-
-	rotateVX *= 0.98;
-	rotateVY *= 0.98;
-
-	if(dragging || rotateTargetX !== undefined ){
-		rotateVX *= 0.6;
-		rotateVY *= 0.6;
-	}	     
-
-	rotateY += controllers.spin * 0.01;
-
-	//	constrain the pivot up/down to the poles
-	//	force a bit of bounce back action when hitting the poles
-	if(rotateX < -rotateXMax){
-		rotateX = -rotateXMax;
-		rotateVX *= -0.95;
-	}
-	if(rotateX > rotateXMax){
-		rotateX = rotateXMax;
-		rotateVX *= -0.95;
-	}		    			    		   
-
-	// TWEEN.update();
-
-	rotating.rotation.x = rotateX;
-	rotating.rotation.y = rotateY;	
-
-    render();	
-    		        		       
-    requestAnimationFrame( animate );	
+	renderer.clear();
+	renderer.render( scene, camera );
+	
+	requestAnimationFrame( animate );
 
 
-	THREE.SceneUtils.traverseHierarchy( rotating, 
-		function(mesh) {
-			if (mesh.update !== undefined) {
-				mesh.update();
-			} 
-		}
-	);	
-
-	for( var i in markers ){
-		var marker = markers[i];
-		marker.update();
-	}		    	
+	// THREE.SceneUtils.traverseHierarchy( rotating,
+	// 	function(mesh) {
+	// 		if (mesh.update !== undefined) {
+	// 			mesh.update();
+	// 		}
+	// 	}
+	// );
+	//
+	// for( var i in markers ){
+	// 	var marker = markers[i];
+	// 	marker.update();
+	// }
 
 }
 
